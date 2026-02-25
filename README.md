@@ -149,7 +149,7 @@ server/
 # ⚙️ Installation
 
 ## 1. Clone Repository
-git clone https://github.com/Prasanna-Anjaneyulu078/AI-ATS-Resume-Analyzer.git
+git clone <https://github.com/Prasanna-Anjaneyulu078/AI-ATS-Resume-Analyzer.git>
 
 ## 2. Install Dependencies
 
