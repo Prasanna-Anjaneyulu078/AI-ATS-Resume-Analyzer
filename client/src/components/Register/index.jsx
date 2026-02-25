@@ -32,7 +32,7 @@ const Register = () => {
     setSuccess("");
 
     // use deployed backend endpoint
-    const url = "https://resume-ats-backend-1-ysjt.onrender.com/auth/register";
+    const url = "https://ai-ats-resume-analyzer-api.onrender.com/auth/register";
     const userDetails = { name, email, password };
 
     try {
