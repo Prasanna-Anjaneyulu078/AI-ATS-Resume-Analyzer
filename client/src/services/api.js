@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Default to Express backend on http://localhost:5000 if environment variable is not explicitly provided
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://resumeats-ai.onrender.com";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
