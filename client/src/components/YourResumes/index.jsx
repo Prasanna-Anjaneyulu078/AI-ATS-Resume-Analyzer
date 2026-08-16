@@ -143,7 +143,7 @@ const YourResumes = () => {
   return (
     <div className="resume-container">
       <div className="workspace-header">
-        <h2>{userName ? `Welcome back, ${userName}! 👋` : "ATS Resume Analyzer & Optimizer"}</h2>
+        <h2>{userName ? `Welcome back, ${userName}! 👋` : "ResumeATS AI Workspace"}</h2>
         <p className="workspace-sub">
           Compare your resume against any target job description to get a deterministic ATS score, matched vs. missing skills, and AI-driven optimizations.
         </p>

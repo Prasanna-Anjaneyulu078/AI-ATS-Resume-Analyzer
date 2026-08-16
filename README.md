@@ -1,4 +1,4 @@
-# AI ATS Resume Analyzer
+# ResumeATS AI
 
 > A full-stack MERN application that evaluates resumes against job descriptions, calculates a deterministic ATS compatibility score, extracts matched vs. missing skills, and provides AI-powered resume optimization suggestions using Google Gemini.
 
@@ -48,7 +48,7 @@
 
 ## Project Overview
 
-**AI ATS Resume Analyzer** is an end-to-end recruitment SaaS application built on the MERN stack (MongoDB, Express, React, Node.js). It bridges the gap between job seekers and Applicant Tracking Systems (ATS) by simulating ATS parsing, keyword extraction, and skill-gap scoring. 
+**ResumeATS AI** is an end-to-end recruitment SaaS application built on the MERN stack (MongoDB, Express, React, Node.js). It bridges the gap between job seekers and Applicant Tracking Systems (ATS) by simulating ATS parsing, keyword extraction, and skill-gap scoring. 
 
 The application parses candidate PDF resumes, extracts text content, analyzes target Job Descriptions, calculates a multi-dimensional ATS score, and leverages Google Gemini AI to generate actionable bullet point rewrites, summary improvements, and role-fit assessments.
 
@@ -195,7 +195,7 @@ flowchart TD
 ## Project Structure
 
 ```text
-AI-ATS-Resume-Analyzer/
+ResumeATS-AI/
 ├── client/                           # React 19 Frontend Application
 │   ├── src/
 │   │   ├── components/
@@ -465,7 +465,7 @@ VITE_API_BASE_URL=http://localhost:5000
 ### 1. Clone Repository
 ```bash
 git clone https://github.com/Prasanna-Anjaneyulu078/AI-ATS-Resume-Analyzer.git
-cd "AI ATS Resume Analyzer"
+cd AI-ATS-Resume-Analyzer
 ```
 
 ### 2. Server Setup
