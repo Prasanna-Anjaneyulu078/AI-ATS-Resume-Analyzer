@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authService } from "../../services/authService.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 import "./index.css";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -34,21 +35,20 @@ const Register = () => {
     setSuccess("");
 
     try {
-      await authService.register(name, email, password);
+      await register(name, email, password);
 
       setSuccess("Registration successful!");
       setName("");
       setEmail("");
       setPassword("");
 
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       setError(err.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="auth-container">

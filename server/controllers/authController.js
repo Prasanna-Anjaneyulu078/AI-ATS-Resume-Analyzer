@@ -4,14 +4,16 @@ import jwt from "jsonwebtoken";
 const getCookieOptions = () => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  path: "/",
 });
 
 const getClearCookieOptions = () => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  path: "/",
 });
 
 export const register = async (req, res) => {
@@ -42,7 +44,7 @@ export const register = async (req, res) => {
       updatedAt: user.updatedAt,
     };
 
-    res.status(201).json({ user: userResponse, token });
+    res.status(201).json({ message: "Registration successful", user: userResponse });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -74,7 +76,6 @@ export const login = async (req, res) => {
 
     res.json({
       message: "Logged in successfully",
-      token,
       user: {
         _id: user._id,
         name: user.name,
@@ -94,7 +95,6 @@ export const logout = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 export const getMe = async (req, res) => {
   try {

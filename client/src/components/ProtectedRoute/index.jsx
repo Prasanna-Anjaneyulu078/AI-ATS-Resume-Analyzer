@@ -1,29 +1,26 @@
-import { useState, useEffect } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
-import { authService } from "../../services/authService.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const ProtectedRoute = ({ children }) => {
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isLoading, isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    const verifyAuth = async () => {
-      try {
-        await authService.getMe();
-        setIsAuthenticated(true);
-      } catch {
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    verifyAuth();
-  }, []);
-
-
-  if (loading) {
-    return <div style={{ color: "#8896b3", textAlign: "center", marginTop: "100px" }}>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "60vh",
+          color: "#475569",
+          fontWeight: 500,
+          fontSize: "0.95rem",
+        }}
+      >
+        Verifying session...
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

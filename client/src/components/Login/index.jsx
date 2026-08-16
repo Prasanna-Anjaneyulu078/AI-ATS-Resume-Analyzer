@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authService } from "../../services/authService.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 import "./index.css";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,8 +27,7 @@ const Login = () => {
     setError("");
 
     try {
-      await authService.login(email, password);
-      window.dispatchEvent(new Event("authChange"));
+      await login(email, password);
       navigate("/");
     } catch (err) {
       setError(err.message || "Login failed");
@@ -35,8 +35,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-
 
   return (
     <div className="auth-container">

@@ -1,44 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { authService } from "../../services/authService.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 import "./index.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, user, logout } = useAuth();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const data = await authService.getMe();
-        if (data && data.user) {
-          setIsLoggedIn(true);
-          const firstName = data.user.name ? data.user.name.split(" ")[0] : "User";
-          setUserName(firstName);
-          setUserEmail(data.user.email || "");
-        } else {
-          setIsLoggedIn(true);
-        }
-      } catch {
-        setIsLoggedIn(false);
-        setUserName("");
-        setUserEmail("");
-      }
-    };
-
-    checkAuth();
-
-    window.addEventListener("authChange", checkAuth);
-
-    return () => {
-      window.removeEventListener("authChange", checkAuth);
-    };
-  }, [location.pathname]);
+  const firstName = user?.name ? user.name.split(" ")[0] : "User";
+  const userEmail = user?.email || "";
 
   // Lock body scroll and listen for Escape key when drawer is open
   useEffect(() => {
@@ -63,15 +36,11 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await authService.logout();
+      await logout();
     } catch (err) {
       console.error("Logout error:", err);
     } finally {
-      setIsLoggedIn(false);
-      setUserName("");
-      setUserEmail("");
       setIsDrawerOpen(false);
-      window.dispatchEvent(new Event("authChange"));
       navigate("/login");
     }
   };
@@ -120,11 +89,11 @@ const Navbar = () => {
 
         {/* DESKTOP ACTIONS (≥ 1024px) */}
         <div className="navbar-actions desktop-only">
-          {isLoggedIn ? (
+          {isAuthenticated ? (
             <>
-              {userName && (
+              {firstName && (
                 <span className="user-welcome-badge">
-                  👋 Welcome, <strong>{userName}</strong>
+                  👋 Welcome, <strong>{firstName}</strong>
                 </span>
               )}
               <button className="nav-btn-logout" onClick={handleLogout}>
@@ -185,12 +154,12 @@ const Navbar = () => {
 
             {/* DRAWER FOOTER / USER SECTION */}
             <div className="drawer-footer">
-              {isLoggedIn ? (
+              {isAuthenticated ? (
                 <>
                   <div className="drawer-user-info">
                     <div className="user-avatar">👤</div>
                     <div className="user-text">
-                      <span className="user-name">{userName || "User"}</span>
+                      <span className="user-name">{firstName || "User"}</span>
                       {userEmail && <span className="user-email">{userEmail}</span>}
                     </div>
                   </div>
