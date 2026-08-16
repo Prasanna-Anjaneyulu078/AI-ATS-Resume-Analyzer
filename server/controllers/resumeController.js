@@ -24,7 +24,7 @@ export const uploadResume = async (req, res) => {
       return res.status(400).json({ error: "No text extracted from PDF" });
     }
 
-    console.log("Resume parsed. Length:", text.length);
+
 
     res.json({
       success: true,
@@ -57,7 +57,7 @@ export const analyzeResume = async (req, res) => {
     // ✅ ATS Score
     const score = calculateATSScore(jdKeywords, resumeKeywords);
 
-    console.log("ATS Score:", score);
+
 
     // ✅ Gemini AI analysis
     const suggestions = await analyzeWithGemini(resumeText, jobDescription);

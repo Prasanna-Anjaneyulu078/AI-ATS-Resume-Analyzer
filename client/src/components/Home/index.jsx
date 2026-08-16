@@ -6,7 +6,8 @@
 //     <div>
 //       <Navbar />
 //       <div className="home-container">
-//         <h1>Welcome to Resume ATS Analyzer</h1>
+//         <h1>Welcome to ResumeATS AI</h1>
+
 //         <p>Your dashboard will appear here.</p>
 //       </div>
 //     </div>
@@ -16,10 +17,27 @@
 // export default Home;
 import Navbar from "../Navbar";
 import "./index.css";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { authService } from "../../services/authService.js";
 
 const Home = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await authService.getMe();
+        if (data && data.user) {
+          setUser(data.user);
+        }
+      } catch {
+        setUser(null);
+      }
+    };
+    fetchUser();
+  }, []);
 
   return (
     <div className="home-wrapper">
@@ -35,8 +53,9 @@ const Home = () => {
         <div className="hero-content">
           <div className="hero-badge">
             <span className="badge-dot"></span>
-            AI-Powered Resume Analysis
+            {user ? `👋 Welcome back, ${user.name.split(" ")[0]}!` : "AI-Powered Resume Analysis"}
           </div>
+
           <h1 className="hero-h1">
             Make Your Resume<br />
             <span className="gradient-text">Beat the Bots</span>
@@ -146,7 +165,7 @@ const Home = () => {
           <p className="section-tag">Why Choose Us</p>
           <h2>Built for<br /><span className="gradient-text">Real Results</span></h2>
           <p className="benefits-desc">
-            Resume ATS Analyzer helps jobseekers pass automated screening. Upload a resume, compare it with a job description, get a clear ATS score, and receive AI-powered edits to increase your chances of getting interviews.
+            ResumeATS AI helps jobseekers pass automated screening. Upload a resume, compare it with a job description, get a clear ATS score, and receive AI-powered edits to increase your chances of getting interviews.
           </p>
           <ul className="benefits-list">
             {[
@@ -162,7 +181,7 @@ const Home = () => {
         <div className="benefits-visual">
           <div className="visual-card">
             <div className="vc-header">
-              <span className="vc-logo">✦ ResumeATS</span>
+              <span className="vc-logo">✦ ResumeATS AI</span>
               <span className="vc-score-badge">92/100</span>
             </div>
             <div className="vc-section-label">CONTENT ANALYSIS</div>
@@ -214,7 +233,7 @@ const Home = () => {
       <footer className="footer">
         <div className="footer-inner">
           <div className="footer-brand">
-            <div className="footer-logo">✦ ResumeATS</div>
+            <div className="footer-logo">✦ ResumeATS AI</div>
             <p>AI-powered resume optimization to help you land your dream job faster.</p>
             <div className="footer-socials">
               <a href="#" aria-label="Twitter">𝕏</a>
@@ -247,10 +266,11 @@ const Home = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 ResumeATS Analyzer. All rights reserved.</p>
+          <p>© 2026 ResumeATS AI. All rights reserved.</p>
           <p>Made with ❤️ for jobseekers worldwide</p>
         </div>
       </footer>
+
     </div>
   );
 };

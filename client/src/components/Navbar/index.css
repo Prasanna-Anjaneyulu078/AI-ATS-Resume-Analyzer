@@ -109,28 +109,100 @@
   transform: scale(1.04) translateY(-1px);
   box-shadow: 0 6px 24px rgba(0, 200, 150, 0.4);
 }
+.nav-btn-logout {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ff5252;
+  background: rgba(255, 82, 82, 0.1);
+  border: 1px solid rgba(255, 82, 82, 0.3);
+  border-radius: 10px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.nav-btn-logout:hover {
+  color: #ffffff;
+  background: rgba(255, 82, 82, 0.85);
+  border-color: #ff5252;
+  box-shadow: 0 0 15px rgba(255, 82, 82, 0.3);
+  transform: translateY(-1px);
+}
+
 .nav-btn-primary:focus-visible,
 .nav-btn-ghost:focus-visible,
+.nav-btn-logout:focus-visible,
 .nav-link:focus-visible {
   outline: 2px solid #00c896;
   outline-offset: 2px;
 }
 
+
+.user-welcome-badge {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #00c896;
+  background: rgba(0, 200, 150, 0.1);
+  border: 1px solid rgba(0, 200, 150, 0.25);
+  padding: 6px 14px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.user-welcome-badge strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    padding: 0 24px;
+  }
+}
+
 @media (max-width: 768px) {
   .navbar {
-    padding: 12px 20px;
+    padding: 10px 18px;
     flex-wrap: wrap;
     height: auto;
-    gap: 12px;
+    gap: 10px;
   }
   .navbar-links {
     order: 3;
     width: 100%;
     justify-content: center;
-    gap: 2px;
+    gap: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
   .nav-link {
     font-size: 0.82rem;
-    padding: 7px 12px;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 440px) {
+  .navbar {
+    padding: 10px 14px;
+  }
+  .navbar-logo {
+    font-size: 1rem;
+  }
+  .navbar-actions {
+    gap: 6px;
+  }
+  .user-welcome-badge {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+  }
+  .nav-btn-ghost,
+  .nav-btn-primary,
+  .nav-btn-logout {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    border-radius: 8px;
   }
 }

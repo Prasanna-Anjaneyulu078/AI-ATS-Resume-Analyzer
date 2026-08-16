@@ -100,6 +100,46 @@
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-container input {
+  width: 100%;
+  padding-right: 46px;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 14px;
+  background: transparent !important;
+  border: none !important;
+  color: #8896b3;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px !important;
+  border-radius: 6px !important;
+  transition: color 0.2s, background 0.2s;
+  box-shadow: none !important;
+  transform: none !important;
+  margin: 0 !important;
+}
+
+.toggle-password-btn:hover {
+  color: #f0f4ff;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.toggle-password-btn:focus-visible {
+  outline: 2px solid #00c896;
+  outline-offset: 2px;
+}
+
 .auth-card input::placeholder {
   color: rgba(136, 150, 179, 0.5);
 }
@@ -110,7 +150,7 @@
   background: rgba(255, 255, 255, 0.07);
 }
 
-.auth-card button {
+.auth-card button[type="submit"] {
   padding: 14px;
   border: none;
   border-radius: 12px;
@@ -125,15 +165,16 @@
   margin-top: 4px;
 }
 
-.auth-card button:hover:not(:disabled) {
+.auth-card button[type="submit"]:hover:not(:disabled) {
   transform: scale(1.02) translateY(-2px);
   box-shadow: 0 8px 36px rgba(0, 200, 150, 0.45);
 }
 
-.auth-card button:disabled {
+.auth-card button[type="submit"]:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 
 .auth-card p {
   text-align: center;
@@ -154,9 +195,19 @@
 }
 
 @media (max-width: 480px) {
+  .auth-container {
+    padding: 100px 16px 40px;
+    align-items: flex-start;
+  }
   .auth-card {
     width: 100%;
-    margin: 0 16px;
-    padding: 36px 24px;
+    max-width: 100%;
+    margin: 0;
+    padding: 32px 20px;
+    gap: 14px;
+    border-radius: 20px;
+  }
+  .auth-card h2 {
+    font-size: 1.5rem;
   }
 }

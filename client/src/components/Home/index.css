@@ -1,5 +1,6 @@
 /* ============================================
-   RESUME ATS ANALYZER — HOME PAGE STYLES
+   RESUMEATS AI — HOME PAGE STYLES
+
    Color theme: Deep navy/indigo + teal accent
    ============================================ */
 
@@ -687,14 +688,78 @@ section { padding: 100px 24px; }
 /* ==============================
    RESPONSIVE
    ============================== */
+@media (min-width: 640px) and (max-width: 1024px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
-  .hero { padding: 100px 20px 60px; min-height: 70vh; }
-  .score-card-tease { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .steps-row { flex-direction: column; }
-  .step-connector { display: none !important; }
-  .benefits-section { flex-direction: column; gap: 40px; }
-  .benefits-visual { justify-content: center; }
-  .footer-inner { gap: 40px; }
-  .footer-bottom { flex-direction: column; text-align: center; }
-  .features-grid { grid-template-columns: 1fr; }
+  .hero {
+    padding: 110px 20px 60px;
+    min-height: auto;
+  }
+  .hero-h1 {
+    font-size: clamp(2.2rem, 8vw, 3.4rem);
+  }
+  .hero-sub {
+    font-size: 1rem;
+    padding: 0 10px;
+  }
+  .score-card-tease {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .score-details {
+    min-width: 100%;
+  }
+  .steps-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .step-connector {
+    display: none !important;
+  }
+  .benefits-section {
+    flex-direction: column;
+    gap: 40px;
+    padding: 60px 20px;
+  }
+  .benefits-visual {
+    justify-content: center;
+    width: 100%;
+  }
+  .visual-card {
+    max-width: 100%;
+  }
+  .footer-inner {
+    gap: 40px;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  section {
+    padding: 60px 16px;
+  }
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .hero-actions button {
+    width: 100%;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .footer-links {
+    gap: 28px;
+  }
 }

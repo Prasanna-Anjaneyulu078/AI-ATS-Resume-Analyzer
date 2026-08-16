@@ -254,7 +254,27 @@
 
 /* ---- RESPONSIVE ---- */
 @media (max-width: 640px) {
-  .contact-card { padding: 28px 20px; }
-  .form-row { grid-template-columns: 1fr; }
-  .contact-info-strip { flex-direction: column; align-items: flex-start; padding: 0 8px; }
+  .contact-container {
+    padding: 110px 16px 60px;
+  }
+  .contact-card {
+    padding: 28px 20px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .contact-btn {
+    width: 100%;
+  }
+  .contact-info-strip {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .info-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 12px 16px;
+    border-radius: 14px;
+  }
 }

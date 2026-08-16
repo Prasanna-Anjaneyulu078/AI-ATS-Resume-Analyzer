@@ -1,19 +1,34 @@
 import { useState } from "react";
 import Navbar from "../Navbar";
+import { contactService } from "../../services/contactService.js";
 import "./index.css";
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (error) setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError("");
+
+    try {
+      await contactService.sendContactMessage(form);
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message || "Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <div className="contact-wrapper">
@@ -39,16 +54,17 @@ const Contact = () => {
             <div className="success-state">
               <div className="success-icon">✓</div>
               <h2>Contact Submitted Successfully!</h2>
-              <p>Thanks for reaching out, <strong>{form.name}</strong>. We'll get back to you at <strong>{form.email}</strong> soon.</p>
+              <p>Thanks for reaching out, <strong>{form.name}</strong>. Your message was delivered to <strong>support@resumeatsai.com</strong>. We'll reply to <strong>{form.email}</strong> shortly.</p>
               <button
                 className="contact-btn"
-                onClick={() => { setSubmitted(false); setForm({ name: "", email: "", message: "" }); }}
+                onClick={() => { setSubmitted(false); setError(""); setForm({ name: "", email: "", message: "" }); }}
               >
                 Send Another Message
               </button>
             </div>
           ) : (
             <form className="contact-form" onSubmit={handleSubmit}>
+              {error && <div className="error-text">{error}</div>}
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="name">Full Name</label>
@@ -87,8 +103,8 @@ const Contact = () => {
                   required
                 />
               </div>
-              <button type="submit" className="contact-btn">
-                Send Message →
+              <button type="submit" className="contact-btn" disabled={loading}>
+                {loading ? "Sending Message..." : "Send Message →"}
               </button>
             </form>
           )}
@@ -97,7 +113,7 @@ const Contact = () => {
         {/* Info strip */}
         <div className="contact-info-strip">
           {[
-            { icon: "✉", label: "Email", value: "hello@resumeats.com" },
+            { icon: "✉", label: "Email", value: "support@resumeatsai.com" },
             { icon: "⏱", label: "Response Time", value: "Within 24 hours" },
             { icon: "📍", label: "Location", value: "Hyderabad, India" },
           ].map((item, i) => (
@@ -114,5 +130,6 @@ const Contact = () => {
     </div>
   );
 };
+
 
 export default Contact;

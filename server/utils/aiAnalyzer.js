@@ -42,9 +42,7 @@ export const analyzeWithGemini = async (resumeText, jobDescription) => {
     const rawText =
       data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    console.log("====== GEMINI RAW OUTPUT ======");
-    console.log(rawText);
-    console.log("================================");
+
 
     if (!rawText) {
       throw new Error("Empty Gemini response");
@@ -80,7 +78,8 @@ export const analyzeWithGemini = async (resumeText, jobDescription) => {
 
 
 const buildPrompt = (resumeText, jobDescription) => `
-You are an ATS resume analyzer.
+You are ResumeATS AI, an ATS resume analyzer.
+
 
 Return STRICT JSON only.
 Do not wrap in markdown.
