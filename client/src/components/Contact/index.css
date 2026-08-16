@@ -1,209 +1,167 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
-
 .contact-wrapper {
-  font-family: 'DM Sans', sans-serif;
-  background: #060e24;
-  color: #f0f4ff;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
   min-height: 100vh;
   position: relative;
   overflow: hidden;
 }
 
-/* ---- BG ORBS ---- */
-.contact-bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-.contact-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.25;
-}
-.contact-orb-1 {
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, #00c896 0%, transparent 70%);
-  top: -100px; right: -100px;
-}
-.contact-orb-2 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, #00A3FF 0%, transparent 70%);
-  bottom: 0; left: -100px;
-}
+.contact-bg-orbs { display: none; }
 
-/* ---- GRADIENT TEXT ---- */
-.gradient-text {
-  background: linear-gradient(135deg, #00c896, #00A3FF, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ---- CONTAINER ---- */
 .contact-container {
   position: relative;
   z-index: 1;
   max-width: 760px;
   margin: 0 auto;
-  padding: 140px 24px 80px;
-  animation: fadeUp 0.8s ease both;
+  padding: 120px 24px 80px;
+  animation: fadeUp 0.6s ease both;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ---- HEADER ---- */
-.contact-header { text-align: center; margin-bottom: 48px; }
+.contact-header { text-align: center; margin-bottom: 40px; }
 
 .contact-tag {
-  font-family: 'Sora', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #00c896;
-  margin-bottom: 12px;
+  color: #2563eb;
+  margin-bottom: 8px;
 }
 
 .contact-title {
-  font-family: 'Sora', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(2rem, 5vw, 2.8rem);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: -0.02em;
-  margin-bottom: 16px;
+  color: #0f172a;
+  margin-bottom: 12px;
 }
 
 .contact-sub {
-  font-size: 1rem;
-  color: #8896b3;
-  line-height: 1.65;
+  font-size: 0.98rem;
+  color: #475569;
+  line-height: 1.6;
   max-width: 520px;
   margin: 0 auto;
 }
 
 /* ---- CARD ---- */
 .contact-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 48px;
-  backdrop-filter: blur(20px);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
   margin-bottom: 32px;
 }
 
 /* ---- FORM ---- */
-.contact-form { display: flex; flex-direction: column; gap: 24px; }
+.contact-form { display: flex; flex-direction: column; gap: 20px; }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 16px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .form-group label {
-  font-family: 'Sora', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #8896b3;
+  color: #475569;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .form-group input,
 .form-group textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 14px 18px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.95rem;
-  color: #f0f4ff;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.92rem;
+  color: #0f172a;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  resize: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  resize: vertical;
 }
 
 .form-group input::placeholder,
 .form-group textarea::placeholder {
-  color: rgba(136, 150, 179, 0.5);
+  color: #94a3b8;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
-  border-color: rgba(0, 200, 150, 0.5);
-  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.08);
-  background: rgba(255, 255, 255, 0.07);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* ---- SUBMIT BUTTON ---- */
 .contact-btn {
-  font-family: 'Sora', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #00c896, #00A3FF);
+  color: #ffffff;
+  background: #2563eb;
   border: none;
-  border-radius: 12px;
-  padding: 15px 36px;
+  border-radius: 8px;
+  padding: 13px 32px;
   cursor: pointer;
   width: fit-content;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 0 28px rgba(0, 200, 150, 0.3);
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.2);
 }
 .contact-btn:hover {
-  transform: scale(1.03) translateY(-2px);
-  box-shadow: 0 8px 36px rgba(0, 200, 150, 0.45);
+  background: #1d4ed8;
 }
 
 /* ---- SUCCESS STATE ---- */
 .success-state {
   text-align: center;
-  padding: 24px 0;
-  animation: fadeUp 0.5s ease both;
+  padding: 20px 0;
 }
 
 .success-icon {
-  width: 72px;
-  height: 72px;
-  background: linear-gradient(135deg, #00c896, #00A3FF);
+  width: 64px;
+  height: 64px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  color: #fff;
-  margin: 0 auto 24px;
-  box-shadow: 0 0 40px rgba(0, 200, 150, 0.4);
-  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-}
-
-@keyframes popIn {
-  from { transform: scale(0); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
+  font-size: 1.8rem;
+  color: #166534;
+  margin: 0 auto 20px;
 }
 
 .success-state h2 {
-  font-family: 'Sora', sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin-bottom: 12px;
-  color: #f0f4ff;
+  margin-bottom: 10px;
+  color: #0f172a;
 }
 
 .success-state p {
-  color: #8896b3;
+  color: #475569;
   font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 28px;
+  line-height: 1.55;
+  margin-bottom: 24px;
 }
 
-.success-state strong { color: #00c896; }
+.success-state strong { color: #2563eb; }
 
 .success-state .contact-btn {
   margin: 0 auto;
@@ -213,52 +171,56 @@
 .contact-info-strip {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 32px;
   flex-wrap: wrap;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 12px 18px;
+  border-radius: 10px;
 }
 
 .info-icon {
-  width: 44px;
-  height: 44px;
-  background: rgba(0, 200, 150, 0.1);
-  border: 1px solid rgba(0, 200, 150, 0.2);
-  border-radius: 12px;
+  width: 38px;
+  height: 38px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  color: #2563eb;
   flex-shrink: 0;
 }
 
 .info-label {
-  font-family: 'Sora', sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #8896b3;
+  letter-spacing: 0.06em;
+  color: #64748b;
   margin-bottom: 2px;
 }
 
 .info-value {
   font-size: 0.88rem;
-  color: #f0f4ff;
+  color: #0f172a;
   font-weight: 500;
 }
 
 /* ---- RESPONSIVE ---- */
 @media (max-width: 640px) {
   .contact-container {
-    padding: 110px 16px 60px;
+    padding: 90px 16px 60px;
   }
   .contact-card {
-    padding: 28px 20px;
+    padding: 24px 18px;
   }
   .form-row {
     grid-template-columns: 1fr;
@@ -269,12 +231,6 @@
   .contact-info-strip {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
-  }
-  .info-item {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    padding: 12px 16px;
-    border-radius: 14px;
+    gap: 12px;
   }
 }

@@ -16,9 +16,9 @@ const ReportModal = ({ analysisResult, onClose }) => {
 
   // Theme configuration based on ATS score
   const getScoreTheme = (s) => {
-    if (s >= 75) return { color: "#00c896", label: "Excellent Match", bg: "rgba(0, 200, 150, 0.15)" };
-    if (s >= 50) return { color: "#ffb703", label: "Good Match", bg: "rgba(255, 183, 3, 0.15)" };
-    return { color: "#ff5252", label: "Needs Optimization", bg: "rgba(255, 82, 82, 0.15)" };
+    if (s >= 75) return { color: "#166534", label: "Excellent Match", bg: "#F0FDF4", border: "#BBF7D0" };
+    if (s >= 50) return { color: "#1e40af", label: "Good Match", bg: "#eff6ff", border: "#bfdbfe" };
+    return { color: "#991b1b", label: "Needs Optimization", bg: "#fef2f2", border: "#fecaca" };
   };
   const theme = getScoreTheme(score);
 
@@ -110,45 +110,64 @@ const ReportModal = ({ analysisResult, onClose }) => {
           {/* SECTION 1: HERO ATS SCORE & JOB INFO */}
           {(activeTab === "all" || activeTab === "overview") && (
             <div className="report-section-block fade-in">
-              <div className="score-hero-card" style={{ borderColor: theme.color }}>
-                <div className="score-gauge-container">
-                  <svg width="140" height="140" viewBox="0 0 140 140" className="gauge-svg">
-                    <circle cx="70" cy="70" r={radius} className="gauge-bg" strokeWidth="10" />
-                    <circle
-                      cx="70"
-                      cy="70"
-                      r={radius}
-                      className="gauge-progress"
-                      strokeWidth="10"
-                      stroke={theme.color}
-                      strokeDasharray={circumference}
-                      strokeDashoffset={strokeDashoffset}
-                    />
-                  </svg>
-                  <div className="score-inner-text">
-                    <span className="score-number">{score}%</span>
-                    <span className="score-label">ATS Score</span>
+              {/* ATS COMPATIBILITY SUMMARY CARD */}
+              <div className="ats-compatibility-summary-card">
+                <div className="summary-card-header-bar">
+                  <span className="summary-card-tag">ATS COMPATIBILITY</span>
+                </div>
+
+                <div className="summary-hero-row">
+                  <div className="score-hero-node">
+                    <span className="hero-score-val">{score}%</span>
+                    <span className="hero-score-lbl">ATS Score</span>
+                  </div>
+
+                  <div className="status-badge-container">
+                    <span
+                      className="summary-match-badge"
+                      style={{
+                        color: theme.color,
+                        backgroundColor: theme.bg,
+                        borderColor: theme.border,
+                      }}
+                    >
+                      {theme.label}
+                    </span>
+                    <span className="badge-caption-sub">Based on your resume</span>
                   </div>
                 </div>
 
-                <div className="score-summary-info">
-                  <div className="match-status-badge" style={{ color: theme.color, background: theme.bg }}>
-                    {theme.label}
-                  </div>
-                  <h3>ATS Compatibility Overview</h3>
+                <div className="summary-overview-block">
+                  <h4>ATS Compatibility Overview</h4>
                   <p>
-                    Your resume has been parsed and evaluated against job requirements using deterministic matching & AI algorithms.
+                    Your resume was evaluated against the selected job requirements using keyword matching and AI analysis.
                   </p>
-                  
-                  {/* JOB INFORMATION CARD */}
-                  {(jobTitle || companyName || filename) && (
-                    <div className="job-info-meta-box">
-                      {jobTitle && <div><span className="info-label">Target Role:</span> <span className="info-val">{jobTitle}</span></div>}
-                      {companyName && <div><span className="info-label">Company:</span> <span className="info-val">{companyName}</span></div>}
-                      {filename && <div><span className="info-label">Resume File:</span> <span className="info-val">📄 {filename}</span></div>}
-                    </div>
-                  )}
                 </div>
+
+                {(jobTitle || companyName || filename) && (
+                  <div className="summary-meta-grid">
+                    {jobTitle && (
+                      <div className="meta-cell">
+                        <span className="meta-label">TARGET ROLE</span>
+                        <span className="meta-val">{jobTitle}</span>
+                      </div>
+                    )}
+
+                    {companyName && (
+                      <div className="meta-cell">
+                        <span className="meta-label">COMPANY</span>
+                        <span className="meta-val">{companyName}</span>
+                      </div>
+                    )}
+
+                    {filename && (
+                      <div className="meta-cell meta-cell-full">
+                        <span className="meta-label">RESUME</span>
+                        <span className="meta-val file-val">📄 {filename}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* DETAILED SCORE BREAKDOWN */}

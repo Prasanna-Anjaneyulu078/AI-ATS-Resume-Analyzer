@@ -123,6 +123,10 @@ const YourResumes = () => {
       if (res?.success && res?.analysis) {
         setAnalysisResult(res.analysis);
         setShowModal(true);
+        // Automatically clear JD form fields AFTER successful analysis
+        setJobTitle("");
+        setCompanyName("");
+        setJobDescription("");
       } else {
         throw new Error(res?.error || "Analysis failed.");
       }

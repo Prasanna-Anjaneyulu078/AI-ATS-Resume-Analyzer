@@ -102,7 +102,7 @@ const Navbar = () => {
 
         {/* LOGO */}
         <div className="navbar-logo" onClick={() => handleNavigate("/")}>
-          ✦ ResumeATS AI
+          ResumeATS <span>AI</span>
         </div>
 
         {/* DESKTOP LINKS (≥ 1024px) */}
@@ -155,7 +155,7 @@ const Navbar = () => {
             {/* DRAWER HEADER */}
             <div className="drawer-header">
               <div className="drawer-logo" onClick={() => handleNavigate("/")}>
-                ✦ ResumeATS AI
+                ResumeATS <span>AI</span>
               </div>
               <button
                 className="drawer-close-btn"
