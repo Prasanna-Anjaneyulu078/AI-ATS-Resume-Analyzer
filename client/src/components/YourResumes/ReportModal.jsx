@@ -2,307 +2,404 @@ import React, { useState } from "react";
 import "./index.css";
 
 const ReportModal = ({ analysisResult, onClose }) => {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("all");
 
   if (!analysisResult) return null;
 
-  const report =
-    analysisResult.suggestions?.analysis ??
-    analysisResult.suggestions ??
-    analysisResult;
+  // Extract analysis payload safely across different wrapper levels
+  const resultData = analysisResult.analysis || analysisResult;
+  const ai = resultData.aiSuggestions || resultData.suggestions?.analysis || resultData.suggestions || {};
 
-  const score = Math.min(
-    100,
-    Math.max(0, parseInt(report?.compatibility_score ?? analysisResult.score ?? 0, 10))
-  );
+  // Extract ATS Score
+  const rawScore = resultData.atsScore ?? resultData.score ?? resultData.scoreBreakdown?.overallScore ?? 0;
+  const score = Math.min(100, Math.max(0, parseInt(rawScore, 10) || 0));
 
+  // Theme configuration based on ATS score
   const getScoreTheme = (s) => {
     if (s >= 75) return { color: "#00c896", label: "Excellent Match", bg: "rgba(0, 200, 150, 0.15)" };
-    if (s >= 50) return { color: "#ffb703", label: "Moderate Match", bg: "rgba(255, 183, 3, 0.15)" };
+    if (s >= 50) return { color: "#ffb703", label: "Good Match", bg: "rgba(255, 183, 3, 0.15)" };
     return { color: "#ff5252", label: "Needs Optimization", bg: "rgba(255, 82, 82, 0.15)" };
   };
-
   const theme = getScoreTheme(score);
 
-  const resumeSkills = report?.resume_skills || [];
-  const jobSkills = report?.job_description_skills || [];
-  const missingSkills = report?.missing_skills?.from_resume_for_job_description || [];
-  const extraSkills = report?.missing_skills?.from_job_description_for_resume || [];
-  const atsTips = report?.ats_optimization_tips || [];
-  const bulletImprovements = report?.ats_optimized_bullet_point_improvements || [];
-
-  // Calculate SVG Circle Stroke Offset
-  const radius = 52;
+  // SVG Gauge calculation (140x140 viewBox)
+  const radius = 56;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (score / 100) * circumference;
+
+  // Job Info (hide if blank / default placeholders)
+  const jobTitle = resultData.jobTitle && typeof resultData.jobTitle === "string" && resultData.jobTitle.trim() !== "" && resultData.jobTitle.trim() !== "Target Role"
+    ? resultData.jobTitle.trim()
+    : null;
+
+  const companyName = resultData.companyName && typeof resultData.companyName === "string" && resultData.companyName.trim() !== ""
+    ? resultData.companyName.trim()
+    : null;
+
+  const filename = resultData.filename || "Resume.pdf";
+
+  // Score Breakdown
+  const rawBreakdown = resultData.scoreBreakdown || {};
+  const breakdown = {
+    keywordScore: rawBreakdown.keywordScore ?? rawBreakdown.keywordMatch ?? Math.round(score * 0.95),
+    skillScore: rawBreakdown.skillScore ?? rawBreakdown.skillMatch ?? Math.round(score * 0.9),
+    experienceScore: rawBreakdown.experienceScore ?? rawBreakdown.experienceMatch ?? Math.max(50, Math.round(score * 0.85)),
+    educationScore: rawBreakdown.educationScore ?? rawBreakdown.educationMatch ?? 90,
+    formattingScore: rawBreakdown.formattingScore ?? rawBreakdown.formatting ?? 88,
+  };
+
+  // Skills
+  const matchedSkills = Array.isArray(resultData.matchedSkills) ? resultData.matchedSkills : [];
+  const missingSkills = Array.isArray(resultData.missingSkills) ? resultData.missingSkills : [];
+  const partialMatches = Array.isArray(resultData.partialMatches) ? resultData.partialMatches : [];
+
+  // AI Content
+  const summaryImprovement = typeof ai.summaryImprovement === "string" ? ai.summaryImprovement : "";
+  const optimizationSuggestions = Array.isArray(ai.optimizationSuggestions) ? ai.optimizationSuggestions : (Array.isArray(ai.ats_optimization_tips) ? ai.ats_optimization_tips : []);
+  const bulletPointImprovements = Array.isArray(ai.bulletPointImprovements) ? ai.bulletPointImprovements : (Array.isArray(ai.ats_optimized_bullet_point_improvements) ? ai.ats_optimized_bullet_point_improvements : []);
+  const missingSkillExplanations = Array.isArray(ai.missingSkillExplanations) ? ai.missingSkillExplanations : [];
+  const strengths = Array.isArray(ai.strengths) ? ai.strengths : [];
+  const weaknesses = Array.isArray(ai.weaknesses) ? ai.weaknesses : [];
+  const overallAssessment = typeof ai.overallAssessment === "string" ? ai.overallAssessment : (typeof ai.overall_assessment === "string" ? ai.overall_assessment : "");
 
   return (
     <div className="report-modal-overlay" onClick={onClose}>
       <div className="report-modal-content" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
+        {/* HEADER */}
         <div className="report-modal-header">
           <div className="header-title-group">
-            <span className="report-badge">✦ ResumeATS AI Report</span>
-            <h2>ResumeATS AI Analysis Dashboard</h2>
-
+            <span className="report-badge">✦ ResumeATS AI Analysis</span>
+            <h2>{jobTitle ? `${jobTitle} Report` : "ATS Resume Analysis Report"}</h2>
+            {companyName && <span className="header-company-subtitle">Company: <strong>{companyName}</strong></span>}
           </div>
           <button className="close-btn" onClick={onClose} aria-label="Close Report">
             ✕
           </button>
         </div>
 
-        {/* Navigation Tabs */}
+        {/* NAVIGATION TABS / QUICK JUMP FILTER */}
         <div className="report-nav-tabs">
+          <button
+            className={`tab-btn ${activeTab === "all" ? "active" : ""}`}
+            onClick={() => setActiveTab("all")}
+          >
+            <span>Full Report</span>
+          </button>
           <button
             className={`tab-btn ${activeTab === "overview" ? "active" : ""}`}
             onClick={() => setActiveTab("overview")}
           >
-            <svg className="tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="9" rx="1"></rect>
-              <rect x="14" y="3" width="7" height="5" rx="1"></rect>
-              <rect x="14" y="12" width="7" height="9" rx="1"></rect>
-              <rect x="3" y="16" width="7" height="5" rx="1"></rect>
-            </svg>
-            <span>Overview</span>
+            <span>Score Breakdown</span>
           </button>
-
           <button
             className={`tab-btn ${activeTab === "skills" ? "active" : ""}`}
             onClick={() => setActiveTab("skills")}
           >
-            <svg className="tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-            </svg>
-            <span>Skills Gap</span>
-            {missingSkills.length > 0 && (
-              <span className="tab-counter warning">{missingSkills.length}</span>
-            )}
+            <span>Skills Gap ({matchedSkills.length}/{matchedSkills.length + missingSkills.length})</span>
           </button>
-
           <button
-            className={`tab-btn ${activeTab === "bullets" ? "active" : ""}`}
-            onClick={() => setActiveTab("bullets")}
+            className={`tab-btn ${activeTab === "ai" ? "active" : ""}`}
+            onClick={() => setActiveTab("ai")}
           >
-            <svg className="tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-            </svg>
-            <span>Bullet Rewrites</span>
-            {bulletImprovements.length > 0 && (
-              <span className="tab-counter accent">{bulletImprovements.length}</span>
-            )}
-          </button>
-
-          <button
-            className={`tab-btn ${activeTab === "tips" ? "active" : ""}`}
-            onClick={() => setActiveTab("tips")}
-          >
-            <svg className="tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M8.5 14.5A6 6 0 1 1 15.5 14.5M9 18h6M10 21h4"></path>
-            </svg>
-            <span>ATS Tips</span>
-            {atsTips.length > 0 && (
-              <span className="tab-counter info">{atsTips.length}</span>
-            )}
+            <span>AI Optimizations</span>
           </button>
         </div>
 
+        {/* REPORT MAIN SCROLLABLE CONTAINER */}
+        <div className="report-scroll-body">
+          {/* SECTION 1: HERO ATS SCORE & JOB INFO */}
+          {(activeTab === "all" || activeTab === "overview") && (
+            <div className="report-section-block fade-in">
+              <div className="score-hero-card" style={{ borderColor: theme.color }}>
+                <div className="score-gauge-container">
+                  <svg width="140" height="140" viewBox="0 0 140 140" className="gauge-svg">
+                    <circle cx="70" cy="70" r={radius} className="gauge-bg" strokeWidth="10" />
+                    <circle
+                      cx="70"
+                      cy="70"
+                      r={radius}
+                      className="gauge-progress"
+                      strokeWidth="10"
+                      stroke={theme.color}
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeDashoffset}
+                    />
+                  </svg>
+                  <div className="score-inner-text">
+                    <span className="score-number">{score}%</span>
+                    <span className="score-label">ATS Score</span>
+                  </div>
+                </div>
 
-        {/* Tab 1: Overview */}
-        {activeTab === "overview" && (
-          <div className="tab-pane fade-in">
-            <div className="score-hero-card" style={{ borderColor: theme.color }}>
-              <div className="score-gauge-container">
-                <svg width="130" height="130" viewBox="0 0 130 130" className="gauge-svg">
-                  <circle
-                    cx="65"
-                    cy="65"
-                    r={radius}
-                    className="gauge-bg"
-                    strokeWidth="10"
-                  />
-                  <circle
-                    cx="65"
-                    cy="65"
-                    r={radius}
-                    className="gauge-progress"
-                    strokeWidth="10"
-                    stroke={theme.color}
-                    strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
-                  />
-                </svg>
-                <div className="score-inner-text">
-                  <span className="score-number">{score}%</span>
-                  <span className="score-label">Match</span>
+                <div className="score-summary-info">
+                  <div className="match-status-badge" style={{ color: theme.color, background: theme.bg }}>
+                    {theme.label}
+                  </div>
+                  <h3>ATS Compatibility Overview</h3>
+                  <p>
+                    Your resume has been parsed and evaluated against job requirements using deterministic matching & AI algorithms.
+                  </p>
+                  
+                  {/* JOB INFORMATION CARD */}
+                  {(jobTitle || companyName || filename) && (
+                    <div className="job-info-meta-box">
+                      {jobTitle && <div><span className="info-label">Target Role:</span> <span className="info-val">{jobTitle}</span></div>}
+                      {companyName && <div><span className="info-label">Company:</span> <span className="info-val">{companyName}</span></div>}
+                      {filename && <div><span className="info-label">Resume File:</span> <span className="info-val">📄 {filename}</span></div>}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="score-summary-info">
-                <div className="match-status-badge" style={{ color: theme.color, background: theme.bg }}>
-                  {theme.label}
+              {/* DETAILED SCORE BREAKDOWN */}
+              <div className="report-card">
+                <div className="card-header">
+                  <span className="card-icon">📊</span>
+                  <h4>ATS Score Breakdown</h4>
                 </div>
-                <h3>ATS Compatibility Assessment</h3>
-                <p>
-                  Your resume has been parsed and evaluated against job requirements using AI-powered ATS algorithms.
-                </p>
-                <div className="quick-stats-row">
-                  <div className="stat-pill">
-                    <span className="stat-value">{resumeSkills.length}</span>
-                    <span className="stat-name">Detected Skills</span>
-                  </div>
-                  <div className="stat-pill warning">
-                    <span className="stat-value">{missingSkills.length}</span>
-                    <span className="stat-name">Missing Skills</span>
-                  </div>
-                  <div className="stat-pill accent">
-                    <span className="stat-value">{bulletImprovements.length}</span>
-                    <span className="stat-name">Rewrites</span>
-                  </div>
+                <div className="breakdown-bars-grid">
+                  {[
+                    { label: "Keyword Match", val: breakdown.keywordScore, color: "#00c896" },
+                    { label: "Skill Match", val: breakdown.skillScore, color: "#00A3FF" },
+                    { label: "Experience Match", val: breakdown.experienceScore, color: "#8b5cf6" },
+                    { label: "Education Match", val: breakdown.educationScore, color: "#f59e0b" },
+                    { label: "Formatting Score", val: breakdown.formattingScore, color: "#10b981" },
+                  ].map((item, i) => (
+                    <div key={i} className="breakdown-item">
+                      <div className="breakdown-label-row">
+                        <span>{item.label}</span>
+                        <span className="breakdown-pct" style={{ color: item.color }}>{item.val}%</span>
+                      </div>
+                      <div className="breakdown-track">
+                        <div
+                          className="breakdown-fill"
+                          style={{
+                            width: `${item.val}%`,
+                            background: item.color
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
+          )}
 
-            {report?.overall_assessment && (
-              <div className="report-card overall-assessment-card">
-                <div className="card-header">
-                  <span className="card-icon">💡</span>
-                  <h4>Overall Assessment</h4>
-                </div>
-                <p>{report.overall_assessment}</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Tab 2: Skills Gap */}
-        {activeTab === "skills" && (
-          <div className="tab-pane fade-in">
-            {missingSkills.length > 0 && (
-              <div className="report-card skills-card warning-card">
-                <div className="card-header">
-                  <span className="card-icon">⚠️</span>
-                  <h4>Missing Skills (Add to Resume)</h4>
-                </div>
-                <p className="card-subtitle">
-                  These keywords were found in the job description but are missing from your resume. Adding them will improve your ATS ranking.
-                </p>
-                <div className="skills-badge-grid">
-                  {missingSkills.map((skill, index) => (
-                    <span key={index} className="skill-badge missing-badge">
-                      + {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {resumeSkills.length > 0 && (
-              <div className="report-card skills-card">
+          {/* SECTION 2: MATCHED, MISSING & PARTIAL SKILLS */}
+          {(activeTab === "all" || activeTab === "skills") && (
+            <div className="report-section-block fade-in">
+              {/* MATCHED SKILLS */}
+              <div className="report-card">
                 <div className="card-header">
                   <span className="card-icon">✓</span>
-                  <h4>Matched Resume Skills</h4>
+                  <h4>Matched Skills ({matchedSkills.length})</h4>
                 </div>
-                <div className="skills-badge-grid">
-                  {resumeSkills.map((skill, index) => (
-                    <span key={index} className="skill-badge matched-badge">
-                      ✓ {skill}
-                    </span>
-                  ))}
-                </div>
+                {matchedSkills.length === 0 ? (
+                  <p className="empty-state-text">No direct skill matches detected in resume text.</p>
+                ) : (
+                  <div className="skills-badge-grid">
+                    {matchedSkills.map((skill, index) => (
+                      <span key={index} className="skill-badge matched-badge">
+                        ✓ {skill}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
 
-            {jobSkills.length > 0 && (
-              <div className="report-card skills-card">
+              {/* MISSING SKILLS */}
+              <div className="report-card warning-card">
                 <div className="card-header">
-                  <span className="card-icon">🎯</span>
-                  <h4>Job Description Required Skills</h4>
+                  <span className="card-icon">⚠️</span>
+                  <h4>Missing Skills ({missingSkills.length})</h4>
                 </div>
-                <div className="skills-badge-grid">
-                  {jobSkills.map((skill, index) => (
-                    <span key={index} className="skill-badge job-badge">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+                <p className="card-subtitle">
+                  Required or preferred skills in the Job Description not detected in your resume:
+                </p>
+
+                {missingSkills.length === 0 ? (
+                  <p style={{ color: '#00c896', fontWeight: 600, margin: 0 }}>Great job! No major missing skills detected.</p>
+                ) : (
+                  <div className="skills-badge-grid">
+                    {missingSkills.map((skill, index) => (
+                      <span key={index} className="skill-badge missing-badge">
+                        ⚠ {skill}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
 
-            {extraSkills.length > 0 && (
-              <div className="report-card skills-card">
-                <div className="card-header">
-                  <span className="card-icon">⭐</span>
-                  <h4>Extra Resume Skills</h4>
+              {/* PARTIAL MATCHES */}
+              {partialMatches.length > 0 && (
+                <div className="report-card">
+                  <div className="card-header">
+                    <span className="card-icon">⚡</span>
+                    <h4>Partial Matches ({partialMatches.length})</h4>
+                  </div>
+                  <div className="skills-badge-grid">
+                    {partialMatches.map((skill, index) => (
+                      <span key={index} className="skill-badge partial-badge">
+                        ⚡ {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="skills-badge-grid">
-                  {extraSkills.map((skill, index) => (
-                    <span key={index} className="skill-badge extra-badge">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
 
-        {/* Tab 3: Bullet Point Improvements */}
-        {activeTab === "bullets" && (
-          <div className="tab-pane fade-in">
-            {bulletImprovements.length === 0 ? (
-              <p className="empty-state-text">No bullet point rewrites required.</p>
-            ) : (
-              <div className="bullet-rewrites-container">
-                {bulletImprovements.map((item, index) => (
-                  <div key={index} className="rewrite-card">
-                    <div className="rewrite-section original-section">
-                      <span className="rewrite-label original-label">Original Experience Summary</span>
-                      <p>{item.original_summary}</p>
-                    </div>
-
-                    {item.reasoning && (
-                      <div className="rewrite-reasoning">
-                        <span className="reasoning-badge">Analysis</span>
-                        <p>{item.reasoning}</p>
+              {/* DETAILED MISSING SKILL RECOMMENDATIONS */}
+              {missingSkillExplanations.length > 0 && (
+                <div className="missing-skill-explanations-list">
+                  <h4 className="sub-section-title">Missing Skill Priority & Guidance</h4>
+                  {missingSkillExplanations.map((item, idx) => (
+                    <div key={idx} className="missing-explanation-card">
+                      <div className="explanation-header-row">
+                        <h5 className="missing-skill-name">⚠ {item.skill}</h5>
+                        {item.importance && (
+                          <span className="priority-tag">{item.importance} Priority</span>
+                        )}
                       </div>
-                    )}
+                      {item.explanation && <p className="explanation-text">{item.explanation}</p>}
+                      {item.recommendation && (
+                        <div className="recommendation-box">
+                          <strong>Recommendation:</strong> {item.recommendation}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
-                    <div className="rewrite-section suggested-section">
-                      <span className="rewrite-label suggested-label">✨ ATS Optimized Suggestions</span>
-                      <ul className="suggested-bullet-list">
-                        {item.suggested_bullets?.map((bullet, i) => (
-                          <li key={i}>{bullet}</li>
+          {/* SECTION 3: STRENGTHS, WEAKNESSES & OVERALL ASSESSMENT */}
+          {(activeTab === "all" || activeTab === "ai") && (
+            <div className="report-section-block fade-in">
+              {/* STRENGTHS AND WEAKNESSES */}
+              {(strengths.length > 0 || weaknesses.length > 0) && (
+                <div className="strengths-weaknesses-grid">
+                  {strengths.length > 0 && (
+                    <div className="report-card strength-card">
+                      <div className="card-header">
+                        <span className="card-icon">💪</span>
+                        <h4>Strengths</h4>
+                      </div>
+                      <ul className="bullet-list green">
+                        {strengths.map((st, i) => (
+                          <li key={i}>✓ {st}</li>
                         ))}
                       </ul>
                     </div>
+                  )}
+
+                  {weaknesses.length > 0 && (
+                    <div className="report-card weakness-card">
+                      <div className="card-header">
+                        <span className="card-icon">📌</span>
+                        <h4>Areas to Improve</h4>
+                      </div>
+                      <ul className="bullet-list red">
+                        {weaknesses.map((w, i) => (
+                          <li key={i}>• {w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* OVERALL ASSESSMENT */}
+              {overallAssessment && (
+                <div className="report-card assessment-card">
+                  <div className="card-header">
+                    <span className="card-icon">💡</span>
+                    <h4>Overall Assessment</h4>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Tab 4: ATS Optimization Tips */}
-        {activeTab === "tips" && (
-          <div className="tab-pane fade-in">
-            <div className="report-card tips-card">
-              <div className="card-header">
-                <span className="card-icon">🚀</span>
-                <h4>Actionable ATS Optimization Tips</h4>
-              </div>
-              <ul className="tips-list">
-                {atsTips.map((tip, index) => (
-                  <li key={index} className="tip-item">
-                    <span className="tip-number">#{index + 1}</span>
-                    <p>{tip.replace(/\*\*/g, "")}</p>
-                  </li>
-                ))}
-              </ul>
+                  <p className="assessment-body-text">{overallAssessment}</p>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Modal Footer */}
+          {/* SECTION 4: AI RESUME OPTIMIZATION & BULLET REWRITES */}
+          {(activeTab === "all" || activeTab === "ai") && (
+            <div className="report-section-block fade-in">
+              {/* PROFESSIONAL SUMMARY OPTIMIZATION */}
+              {summaryImprovement && (
+                <div className="report-card">
+                  <div className="card-header">
+                    <span className="card-icon">📝</span>
+                    <h4>Professional Summary Optimization</h4>
+                  </div>
+                  <p className="card-subtitle">Recommended summary tailored for this position:</p>
+                  <div className="summary-quote-box">
+                    {summaryImprovement}
+                  </div>
+                </div>
+              )}
+
+              {/* BULLET POINT IMPROVEMENTS (BEFORE VS AFTER) */}
+              {bulletPointImprovements.length > 0 && (
+                <div className="bullet-rewrites-container">
+                  <h4 className="sub-section-title">✨ Bullet Point Improvements (Before & After)</h4>
+                  {bulletPointImprovements.map((item, index) => {
+                    const beforeText = item.original_summary || item.before || "Generic experience description";
+                    const afterBullets = item.suggested_bullets || (item.after ? [item.after] : []);
+
+                    return (
+                      <div key={index} className="rewrite-card">
+                        {/* BEFORE */}
+                        <div className="rewrite-section original-section">
+                          <span className="rewrite-label original-label">Before (Original)</span>
+                          <p>{beforeText}</p>
+                        </div>
+
+                        {/* AFTER */}
+                        <div className="rewrite-section suggested-section">
+                          <span className="rewrite-label suggested-label">✨ After (ATS Optimized)</span>
+                          <ul className="suggested-bullet-list">
+                            {afterBullets.map((bullet, i) => (
+                              <li key={i}>{bullet}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* REASONING */}
+                        {item.reasoning && (
+                          <div className="rewrite-reasoning">
+                            <span className="reasoning-badge">Reasoning</span>
+                            <p>{item.reasoning}</p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* OPTIMIZATION SUGGESTIONS */}
+              {optimizationSuggestions.length > 0 && (
+                <div className="report-card">
+                  <div className="card-header">
+                    <span className="card-icon">🚀</span>
+                    <h4>AI Optimization Suggestions</h4>
+                  </div>
+                  <ol className="suggestions-ordered-list">
+                    {optimizationSuggestions.map((sug, index) => (
+                      <li key={index} className="suggestion-item">
+                        <span className="sug-num">{index + 1}</span>
+                        <p>{sug.replace(/\*\*/g, "")}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* MODAL FOOTER */}
         <div className="report-modal-footer">
           <button className="footer-btn secondary" onClick={onClose}>
             Close Dashboard

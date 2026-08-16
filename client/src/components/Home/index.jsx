@@ -112,12 +112,36 @@ const Home = () => {
         </div>
         <div className="features-grid">
           {[
-            { icon: "📄", title: "Resume Parsing", desc: "Extracts skills, experience, and education from PDF/DOCX." },
-            { icon: "🎯", title: "ATS Scoring", desc: "Compares your resume to job descriptions and returns an ATS compatibility score." },
-            { icon: "🤖", title: "AI Suggestions", desc: "Personalized, actionable edits and bullet rewrites powered by an LLM." },
-            { icon: "🔑", title: "Keyword Optimization", desc: "Highlights missing keywords and suggests where to add them." },
-            { icon: "📐", title: "Format & Layout Tips", desc: "Recommend resume sections and formatting to improve parsing." },
-            { icon: "🔒", title: "Secure & Private", desc: "Files are processed securely; user accounts protect your data." },
+            {
+              icon: "📄",
+              title: "Resume Intelligence",
+              desc: "Extracts and analyzes skills, experience, education, projects, certifications, and keywords from your PDF/DOCX resume.",
+            },
+            {
+              icon: "💼",
+              title: "Job Description Analysis",
+              desc: "Analyzes the JD to identify required skills, preferred skills, responsibilities, experience requirements, and important keywords.",
+            },
+            {
+              icon: "🎯",
+              title: "ATS Compatibility Score",
+              desc: "Compares your resume against a specific Job Description (JD) and calculates a detailed ATS compatibility score based on skills, keywords, experience, and other relevant factors.",
+            },
+            {
+              icon: "🔍",
+              title: "Skill Gap Analysis",
+              desc: "Clearly identifies matched, partially matched, and missing skills between your resume and the target job description.",
+            },
+            {
+              icon: "🔑",
+              title: "Keyword Optimization",
+              desc: "Identifies important JD keywords missing from your resume and recommends where and how to naturally include relevant keywords.",
+            },
+            {
+              icon: "🤖",
+              title: "AI Resume Optimization",
+              desc: "Provides personalized, job-specific recommendations and improves bullet points, professional summaries, and resume content using AI.",
+            },
           ].map((f, i) => (
             <div className="feature-card" key={i} style={{"--delay": `${i * 0.1}s`}}>
               <div className="feature-icon">{f.icon}</div>

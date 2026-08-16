@@ -9,21 +9,25 @@ const Navbar = () => {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const data = await authService.getMe();
-        if (data && data.user && data.user.name) {
+        if (data && data.user) {
           setIsLoggedIn(true);
-          const firstName = data.user.name.split(" ")[0];
+          const firstName = data.user.name ? data.user.name.split(" ")[0] : "User";
           setUserName(firstName);
+          setUserEmail(data.user.email || "");
         } else {
           setIsLoggedIn(true);
         }
       } catch {
         setIsLoggedIn(false);
         setUserName("");
+        setUserEmail("");
       }
     };
 
@@ -36,6 +40,27 @@ const Navbar = () => {
     };
   }, [location.pathname]);
 
+  // Lock body scroll and listen for Escape key when drawer is open
+  useEffect(() => {
+    if (isDrawerOpen) {
+      document.body.style.overflow = "hidden";
+
+      const handleKeyDown = (e) => {
+        if (e.key === "Escape") {
+          setIsDrawerOpen(false);
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [isDrawerOpen]);
+
   const handleLogout = async () => {
     try {
       await authService.logout();
@@ -44,61 +69,151 @@ const Navbar = () => {
     } finally {
       setIsLoggedIn(false);
       setUserName("");
+      setUserEmail("");
+      setIsDrawerOpen(false);
       window.dispatchEvent(new Event("authChange"));
       navigate("/login");
     }
   };
 
+  const handleNavigate = (path) => {
+    setIsDrawerOpen(false);
+    navigate(path);
+  };
+
   const links = [
-    { label: "Home", path: "/" },
-    { label: "Your Resumes", path: "/your-resumes" },
-    { label: "Contact", path: "/contact" },
+    { label: "Home", icon: "🏠", path: "/" },
+    { label: "Your Resumes", icon: "📄", path: "/your-resumes" },
+    { label: "Analysis History", icon: "🕘", path: "/analysis-history" },
+    { label: "Contact", icon: "✉", path: "/contact" },
   ];
 
   return (
-    <nav className="navbar">
-      <div className="navbar-logo" onClick={() => navigate("/")}>
-        ✦ ResumeATS AI
-      </div>
+    <>
+      <nav className="navbar">
+        {/* HAMBURGER BUTTON (TABLET & MOBILE) */}
+        <button
+          className="mobile-menu-btn"
+          onClick={() => setIsDrawerOpen(true)}
+          aria-label="Open navigation menu"
+        >
+          ☰
+        </button>
 
-      <div className="navbar-links">
-        {links.map((link) => (
-          <button
-            key={link.path}
-            className={`nav-link ${location.pathname === link.path ? "active" : ""}`}
-            onClick={() => navigate(link.path)}
+        {/* LOGO */}
+        <div className="navbar-logo" onClick={() => handleNavigate("/")}>
+          ✦ ResumeATS AI
+        </div>
+
+        {/* DESKTOP LINKS (≥ 1024px) */}
+        <div className="navbar-links desktop-only">
+          {links.map((link) => (
+            <button
+              key={link.path}
+              className={`nav-link ${location.pathname === link.path ? "active" : ""}`}
+              onClick={() => handleNavigate(link.path)}
+            >
+              {link.label}
+            </button>
+          ))}
+        </div>
+
+        {/* DESKTOP ACTIONS (≥ 1024px) */}
+        <div className="navbar-actions desktop-only">
+          {isLoggedIn ? (
+            <>
+              {userName && (
+                <span className="user-welcome-badge">
+                  👋 Welcome, <strong>{userName}</strong>
+                </span>
+              )}
+              <button className="nav-btn-logout" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="nav-btn-ghost" onClick={() => handleNavigate("/login")}>
+                Login
+              </button>
+              <button className="nav-btn-primary" onClick={() => handleNavigate("/register")}>
+                Register
+              </button>
+            </>
+          )}
+        </div>
+      </nav>
+
+      {/* MOBILE / TABLET SLIDE-IN SIDEBAR DRAWER */}
+      {isDrawerOpen && (
+        <div className="drawer-overlay" onClick={() => setIsDrawerOpen(false)}>
+          <div
+            className="drawer-sidebar"
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Navigation drawer"
           >
-            {link.label}
-          </button>
-        ))}
-      </div>
+            {/* DRAWER HEADER */}
+            <div className="drawer-header">
+              <div className="drawer-logo" onClick={() => handleNavigate("/")}>
+                ✦ ResumeATS AI
+              </div>
+              <button
+                className="drawer-close-btn"
+                onClick={() => setIsDrawerOpen(false)}
+                aria-label="Close navigation menu"
+              >
+                ✕
+              </button>
+            </div>
 
-      <div className="navbar-actions">
-        {isLoggedIn ? (
-          <>
-            {userName && (
-              <span className="user-welcome-badge">
-                👋 Welcome, <strong>{userName}</strong>
-              </span>
-            )}
-            <button className="nav-btn-logout" onClick={handleLogout}>
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <button className="nav-btn-ghost" onClick={() => navigate("/login")}>
-              Login
-            </button>
-            <button className="nav-btn-primary" onClick={() => navigate("/register")}>
-              Register
-            </button>
-          </>
-        )}
-      </div>
-    </nav>
+            {/* DRAWER NAVIGATION LINKS */}
+            <div className="drawer-nav-list">
+              {links.map((link) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <button
+                    key={link.path}
+                    className={`drawer-link ${isActive ? "active" : ""}`}
+                    onClick={() => handleNavigate(link.path)}
+                  >
+                    <span className="drawer-link-icon">{link.icon}</span>
+                    <span className="drawer-link-text">{link.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* DRAWER FOOTER / USER SECTION */}
+            <div className="drawer-footer">
+              {isLoggedIn ? (
+                <>
+                  <div className="drawer-user-info">
+                    <div className="user-avatar">👤</div>
+                    <div className="user-text">
+                      <span className="user-name">{userName || "User"}</span>
+                      {userEmail && <span className="user-email">{userEmail}</span>}
+                    </div>
+                  </div>
+                  <button className="drawer-logout-btn" onClick={handleLogout}>
+                    <span>🚪 Logout</span>
+                  </button>
+                </>
+              ) : (
+                <div className="drawer-auth-btns">
+                  <button className="nav-btn-ghost" onClick={() => handleNavigate("/login")}>
+                    Login
+                  </button>
+                  <button className="nav-btn-primary" onClick={() => handleNavigate("/register")}>
+                    Register
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
-
 
 export default Navbar;
